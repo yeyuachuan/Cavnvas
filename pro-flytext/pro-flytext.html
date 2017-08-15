@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>弹幕功能实现</title>
+    <style>
+        canvas{
+            border: 3px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas width="800" height="600"></canvas>
+    <br/>
+    <input class="text" type="text" placeholder="请输入弹幕">
+    <input class="btn" type="button" value="发送">
+</body>
+</html>
+<script>
+    var can = document.querySelector("canvas");
+    var pen = can.getContext('2d');
+    var arr =[];
+    var sendbtn =document.querySelector(".btn");
+    var arrother =[];
+    var cNum = [
+        '#FFA400',
+        '#5C0DAC',
+        '#FFAA00',
+        '#1240AB',
+        '#009999',
+        '#00CC00'
+    ]
+
+
+    sendbtn.onclick=function(){
+        var sendtext =document.querySelector(".text").value;
+        arr.push({
+            text:sendtext,
+            x:800,
+            y:Math.ceil(Math.random()*600),
+            c:cNum[Math.ceil(Math.random()*cNum.length)]
+        });
+
+    }
+
+
+
+    setInterval(function(){//执行动画效果
+        pen.clearRect(0,0,800,600);
+        for(var i=0;i<arr.length;i++){
+            drawtext(arr[i].text,arr[i].x--,arr[i].y,arr[i].c);
+            if(arr[i].x<-100){
+                arr.splice(i,1);
+            }
+        }
+    },1000/24);
+
+    function drawtext(text,x,y,c){//绘制文字
+        pen.beginPath();
+        pen.fillStyle =c;
+        pen.fillText(text,x,y);
+        pen.fill();
+        pen.closePath();
+    }
+
+
+</script>

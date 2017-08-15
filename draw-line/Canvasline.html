@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Canvas直线的绘制</title>
+</head>
+<body>
+    <canvas width="800" height="600"></canvas>
+</body>
+</html>
+<script>
+    var can = document.querySelector("canvas");
+    var pen = can.getContext('2d');
+
+    pen.beginPath();
+    pen.strokeStyle ="red";
+    pen.moveTo(100,100);//笔放在这里
+    pen.lineTo(100,100);//开始接触画布，绘制
+    pen.lineTo(100,200);
+    pen.lineTo(200,100);
+    pen.stroke();
+    pen.closePath();//如果想画第二条线  就直接再重新开始就好
+
+</script>
