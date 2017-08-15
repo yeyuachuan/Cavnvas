@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>倒计时牌子的制作</title>
+    <style>
+
+    </style>
+</head>
+<body>
+    <canvas width="2000" height="600"></canvas>
+    <span></span>
+</body>
+</html>
+<script src="JS/digit.js"></script>
+<script src="JS/public.js"></script>
+<script>
+
+    setInterval(function(){
+        var date = getDate();
+        if(date != getDate()){
+            for(var i=0;i<ball.length;i++){
+                ball[i].status = 1;
+                ball[i].c =cNum[Math.ceil(Math.random()*cNum.length)];
+            }
+            date.splice(2,0,"10");
+            date.splice(5,0,"10");
+            for(var i = 0; i < date.length; i ++) {//初步用圆绘制时间。
+                giveNum(digit[date[i]], 20, 20, 10, "blue", 200 * i+100, 100);
+            }
+        }
+    },1000)
+
+    function getDate(){
+        var date = new Date();
+        var h = date.getHours().toString();
+        var m = date.getMinutes().toString();
+        var s = date.getSeconds().toString();
+
+        if(h.length ==1){
+            h = "0" + h;
+        }
+        if(m.length ==1){
+            m = "0" + m;
+        }
+        if(s.length ==1){
+            s = "0" + s;
+        }
+        return (h+m+s).split("");
+    }
+
+
+
+
+
+    var can = document.querySelector("canvas");
+    var pen = can.getContext("2d");
+    var ball =[];
+    var cNum = [
+        '#FFA400',
+        '#5C0DAC',
+        '#FFAA00',
+        '#1240AB',
+        '#009999',
+        '#00CC00'
+    ]
+
+    function giveNum(arr,x_,y_,r_,c_,px,py){
+        for(var i =0;i<arr.length;i++){//为小球填入属性
+            for(var j= 0;j<arr[i].length;j++){
+                if(arr[i][j] ==1){
+                    ball.push({
+                        x:x_*j+px,
+                        y:y_*i+py,
+                        r:r_,
+                        c:c_,
+                        v:0,
+                        g:8,
+                        vx:Math.pow(-1,Math.ceil(Math.random()*10))*4,
+                        status:0
+                    })
+                }
+            }
+        }
+    }
+
+
+
+    setInterval(function(){//绘制动画
+        pen.clearRect(0,0,2000,600);
+        for(var k=0;k<ball.length;k++){
+            if(ball[k].status ==1){
+                ball[k].v +=ball[k].g;
+                ball[k].y +=ball[k].v;
+                ball[k].x +=ball[k].vx;
+                if(ball[k].y >=560){
+                    ball[k].y =560;
+                    ball[k].v =-ball[k].v*0.8;
+                }
+            }
+            drawball(ball[k].x,ball[k].y,ball[k].r,ball[k].c);
+            if(ball[k].x < 0 || ball[k].x>2000){
+                ball.splice(k,1);
+            }
+        }
+    },1000/60)
+
+
+
+</script>
