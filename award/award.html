@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>刮卡效果的制作</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .award{
+            width: 300px;
+            height: 40px;
+            margin: 0 auto;
+        }
+        .test{
+            width: 300px;
+            height: 40px;
+            background-color: red;
+            border: 5px solid black;
+            color: yellow;
+            font-size: 12px;
+            font-family: 微软雅黑;
+            line-height: 40px;
+            text-align: center;
+        }
+        canvas{
+            border: 5px solid black;
+            position: absolute;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="award">
+        <div class="test">中奖啦！（我看你是在做梦，非洲人）</div>
+        <canvas width="300px" height="40px"></canvas>
+    </div>
+</body>
+</html>
+<script>
+    var can = document.querySelector("canvas");
+    var pen = can.getContext("2d");
+
+    pen.beginPath();
+    pen.fillStyle = "#cccccc";
+    pen.fillRect(0,0,300,40);
+    pen.fill();
+    pen.closePath();
+
+
+    can.onmousemove = function(e){
+        var cany =can.offsetTop;
+        var canx =can.offsetLeft;
+        pen.clearRect(e.pageX-canx-20, e.pageY-cany-20,30,30);
+    }
+
+
+</script>

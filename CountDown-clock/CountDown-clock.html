@@ -25,7 +25,8 @@
             }
             date.splice(2,0,"10");
             date.splice(5,0,"10");
-            for(var i = 0; i < date.length; i ++) {//初步用圆绘制时间。
+
+            for(var i = 0; i < date.length; i ++) {//给几个数字赋予属性
                 giveNum(digit[date[i]], 20, 20, 10, "blue", 200 * i+100, 100);
             }
         }
