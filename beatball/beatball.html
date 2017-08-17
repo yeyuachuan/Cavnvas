@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>打爆气球</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        canvas{
+            border: 1px solid red;
+        }
+    </style>
+</head>
+<body>
+    <canvas width="2000" height="800"></canvas>
+</body>
+</html>
+<script>
+    var arr = ["blue.png","green.png","red.png"];
+    var imgs ={}
+
+    function lazyLoad(arr,fun){
+        var len =arr.length;
+        var num = 0;
+        for(var i=0;i<len;i++){
+            var img =new Image();
+            img.onload =function(){
+                num++;
+                if(num = len){
+                    fun(imgs);
+                    console.log(imgs);
+                }
+            }
+            img.src =arr[i];
+            var name = arr[i].split(".")[0];
+            imgs[name] =img;
+        }
+    }
+
+    var can =document.querySelector("canvas");
+    var pen =can.getContext('2d');
+    var balloon =[];
+
+    setInterval(function(){
+        balloon.push({
+            x:Math.random()*2000,
+            y:600,
+            s:Math.ceil(Math.random()*0.9),
+            c:Math.ceil(Math.random()*3)
+        })
+    },1000)
+
+
+
+
+
+    var ex,ey;
+
+    lazyLoad(arr,function(data){
+        setInterval(function(){
+            pen.clearRect(0,0,2000,800);
+            window.onmouseup = function(e){
+                ex = 0;
+                ey = 0;
+            }
+
+            for(var k=0;k<balloon.length;k++){
+                switch (balloon[k].c){
+                    case 1:
+                        pen.drawImage(data.blue,balloon[k].x,balloon[k].y-=balloon[k].s,40,50);
+                        break;
+                    case 2:
+                        pen.drawImage(data.red,balloon[k].x,balloon[k].y-=balloon[k].s,40,50);
+                        break;
+                    case 3:
+                        pen.drawImage(data.green,balloon[k].x,balloon[k].y-=balloon[k].s,40,50);
+                        break;
+                }
+                if(balloon[k].y<-100){
+                    balloon.splice(k,1);
+                }
+            }
+        },1000/24);
+
+    })
+
+    window.onmousedown = function(e){
+        ex = e.pageX;
+        ey = e.pageY;
+        for(var l= 0;l<balloon.length;l++){
+            if(touch(ex,ey,balloon[l].x,balloon[l].y,40,50)){
+                balloon.splice(l,1);
+            }
+        }
+    }
+
+
+    function touch(x1,y1,x2,y2,w2,h2){
+        if(x1>x2+w2 || y1>y2+h2 || x1<x2 || y1<y2){
+            return false;
+        }else {
+            return true;
+        }
+    }
+</script>

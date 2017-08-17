@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>捕鱼游戏的制作</title>
+    <style>
+        canvas{
+            background:url("image/back.jpg");
+        }
+    </style>
+</head>
+<body>
+    <canvas width="800" height="600"></canvas>
+</body>
+</html>
+<script>
+    //懒加载手段
+    var arr =["fish.png","gun.png","bullet.png"];
+    var imgs ={};
+    function lazyLoad(arr,fun){
+        var len =arr.length;
+        var num = 0;
+        for(var i= 0;i<len;i++){
+            var img =new Image();
+            img.onload =function(data){
+                num++;
+                if(num == len){
+                    fun(imgs);
+                    console.log(imgs);
+                }
+            }
+            img.src =arr[i];
+            var name  =arr[i].split(".")[0];
+            imgs[name] = img;
+        }
+    }
+
+    var can = document.querySelector("canvas");
+    var pen = can.getContext('2d');
+    var fishs =[];
+    var bullet =[];
+    var gun ={
+        y: 500,
+        x: 300,
+        s: 10
+    }
+
+     setInterval(function(){
+         fishs.push({
+             x:-100,
+             y:Math.ceil(Math.random()*600),
+             i:0,
+             s:Math.ceil(Math.random()*5),
+             r: (Math.ceil(Math.random()*40 - 20))*Math.PI/180
+         })
+     },1000)
+
+
+    lazyLoad(arr,function(data){
+        setInterval(function(){
+            pen.clearRect(0,0,800,600);
+            for(var k = 0;k<fishs.length;k++){
+                fishs[k].i++;
+                if(fishs[k].i ==8){
+                    fishs[k].i =0;
+                }
+                pen.rotate(fishs[k].r);
+                pen.drawImage(data.fish, 0, fishs[k].i*126, 174, 126, fishs[k].x += fishs[k].s, fishs[k].y, 80, 80);
+                pen.rotate(-fishs[k].r);
+                if(fishs[k].x>900){
+                    fishs.splice(k,1);
+                }
+            }
+
+            for(var l =0;l<bullet.length;l++){
+                pen.drawImage(data.bullet,bullet[l].x,bullet[l].y-=bullet[l].s,20,20);
+                for(var k = 0;k<fishs.length;k++){
+                    if(touch(bullet[l].x,bullet[l].y,20,20,fishs[k].x, fishs[k].y, 80, 80)==true){
+                        bullet.splice(l,1);
+                        fishs.splice(k,1);
+                    }
+                }
+                if(bullet[l].y <-10){
+                    bullet.splice(l,1);
+                }
+            }
+            pen.drawImage(data.gun,gun.x, gun.y, 74, 68);
+        },1000/24);
+    })
+
+
+    window.onkeydown =function(e){
+        switch(e.keyCode){
+            case 38:
+                break;
+            case 39:
+                gun.x +=gun.s;
+                break;
+            case 40:
+                break;
+            case 37:
+                gun.x -=gun.s;
+                break;
+            case 32:
+                bullet.push({
+                    x: gun.x + 26,
+                    y: gun.y + 5,
+                    s: 5
+                });
+                break;
+        }
+    }
+
+    function touch(x1,y1,w1,h1,x2,y2,w2,h2){
+        if(x1>x2+w2 || y1>y2+h2 || x1+w1<x2 || y1+h1<y2){
+            return false;
+        }else{
+            return true;
+        }
+
+    }
+
+
+</script>
