@@ -23,7 +23,18 @@
             left: 50%;
             top: 553px;
             margin-left: -82px;
-            background: url("image/icon.png") no-repeat -222px -1400px;
+            background: url("image/icon.png") no-repeat -222px -1389px;
+        }
+        .back{
+            width: 480px;
+            height: 800px;
+            border: 2px solid black;
+            background: url('image/background.jpg') -480px 0;
+            position: absolute;
+            z-index: 10;
+            display: none;
+            left: 50%;
+            margin-left: -240px;
         }
         .restart{
             width: 164px;
@@ -35,47 +46,92 @@
             margin-left: -82px;
             background: url("image/icon.png") no-repeat -19px -1400px;
         }
+        .cover{
+            width: 480px;
+            height: 800px;
+            border: 2px solid black;
+            background-color: #cccccc;
+            opacity: 0.6;
+            display: none;
+            position: absolute;
+            z-index: 9;
+            left: 50%;
+            margin-left: -240px;
+        }
+        .load-back{
+            width: 160px;
+            height: 10px;
+            display: none;
+            position: absolute;
+            top: 300px;
+            left: 50%;
+            margin-left: -80px;
+            border: 1px solid black;
+            background-color: red;
+            border-radius: 6px;
+        }
+        .load{
+            width: 20px;
+            height: 10px;
+            display: none;
+            border: 1px solid black;
+            position: absolute;
+            top: 300px;
+            left: 50%;
+            margin-left: -80px;
+            background-color: greenyellow;
+            border-radius: 6px;
+        }
     </style>
 </head>
 <body>
+
+    <div class="cover">
+        <div class="load-back"></div>
+        <div class="load"></div>
+    </div>
     <canvas width="480" height="800"></canvas>
     <div class="start"></div>
+    <div class="back"></div>
     <div class="restart"></div>
 </body>
 </html>
 <script>
-    var donkey ={
-        i:0,
-        x:100,
-        y:700,
-        vx:0,
-        vy:20,//20可以跳半个屏幕
-        a:-0.4,
-        status:0
-    };
+
+
 
 //给界面的开关
     var can = document.querySelector("canvas");
     var pen  = can.getContext("2d");
-    var hold =0;
 
     can.style.background = "url('image/background.jpg')";
+    document.querySelector(".restart").style.display ="none";
+
+
+
     document.querySelector(".start").onmousedown =function(){
         document.querySelector(".start").style.backgroundPositionY =-1509+"px";
     }
     document.querySelector(".start").onmouseup =function (){
         document.querySelector(".start").style.backgroundPositionY =-1400+"px";
-        hold =1;
-        if(hold == 1){
-            document.querySelector(".start").style.display ="none";
-            can.style.background = "url('image/sky.png')";
-            can.style.backgroundPositionY =-2200+"px";
-            console.log(donkey.vy);
-        }
+        document.querySelector(".start").style.display ="none";
+        document.querySelector(".load").style.display ="block";
+        document.querySelector(".load-back").style.display ="block";
+        document.querySelector(".cover").style.display ="block";
+            game();
+
     }
 
 
-
+    document.querySelector(".restart").onmousedown =function(){
+        document.querySelector(".restart").style.backgroundPositionY =-1509+"px";
+    }
+    document.querySelector(".restart").onmouseup =function (){
+        document.querySelector(".restart").style.backgroundPositionY =-1400+"px";
+        document.querySelector(".restart").style.display ="none";
+        document.querySelector(".back").style.display ="none";
+        window.location.reload();
+    }
 
 
     function game(){
@@ -87,10 +143,20 @@
             for(var i = 0;i<len;i++){
                 var img =new Image();
                 img.onload =function(){
-                    num ++;
-                    if(num == len){
-                        fun(imgs);
-                    }
+                    //这里写图片加载过程
+                        num ++;
+                        var width =num * 20;
+                        document.querySelector(".load").style.width = width + "px";
+                        console.log(num);
+                        if(num == len){
+                            document.querySelector(".load").style.display ="none";
+                            document.querySelector(".load-back").style.display ="none";
+                            document.querySelector(".cover").style.display ="none";
+
+                            can.style.background = "url('image/sky.png')";
+                            can.style.backgroundPositionY =-2200+"px";
+                            fun(imgs);
+                        }
                 }
                 img.src =arr[i];
                 var name = arr[i].split(".")[0];
@@ -98,11 +164,16 @@
             }
         }
 
-
         var backMove =-2200;
-
-
-
+        var donkey ={
+            i:0,
+            x:100,
+            y:700,
+            vx:0,
+            vy:20,//20可以跳半个屏幕
+            a:-0.4,
+            status:0
+        }
         var cloud =[];
         for(var i=0;i<80;i++){
             cloud.push({
@@ -112,178 +183,161 @@
                 status_move:0
             })
         }
-
-        var open =0;
-
+        var open;
 
 
 
 
-        if(hold ==1){
+        setTimeout(function(){
+            open =1;
+        },3000)
 
-
-
-
-            setTimeout(function(){
-                open =1;
-            },3000)
-
-            lazyLoad(arr,function(data){
-                setInterval(function(){
-                    pen.clearRect(0,0,480,1000);
-
-                    //云
-                    for(var k= 0;k<cloud.length;k++){
-                        switch (cloud[k].kind){
-                            case 1:
-                                pen.drawImage(data.stair_stable_01,0,0,153,57,cloud[k].x,cloud[k].y,153,57);
-                                break;
-                            case 2:
-                                if(cloud[k].status_move == 0){
-                                    if(cloud[k].x >300){
-                                        cloud[k].status_move =1;
-                                    }
-                                    cloud[k].x+=6;
-                                }else{
-                                    if(cloud[k].x <0){
-                                        cloud[k].status_move =0;
-                                    }
-                                    cloud[k].x-=6;
+        lazyLoad(arr,function(data){
+            setInterval(function(){
+                pen.clearRect(0,0,480,1000);
+                //云
+                for(var k= 0;k<cloud.length;k++){
+                    switch (cloud[k].kind){
+                        case 1:
+                            pen.drawImage(data.stair_stable_01,0,0,153,57,cloud[k].x,cloud[k].y,153,57);
+                            break;
+                        case 2:
+                            if(cloud[k].status_move == 0){
+                                if(cloud[k].x >300){
+                                    cloud[k].status_move =1;
                                 }
-                                pen.drawImage(data.stair_moveable,0,0,153,128,cloud[k].x,cloud[k].y,153,128);
-                                break;
-                            case 3:
-                                pen.drawImage(data.stair_friable,0,0,153,128,cloud[k].x,cloud[k].y,153,128);
-                                break;
+                                cloud[k].x+=6;
+                            }else{
+                                if(cloud[k].x <0){
+                                    cloud[k].status_move =0;
+                                }
+                                cloud[k].x-=6;
+                            }
+                            pen.drawImage(data.stair_moveable,0,0,153,128,cloud[k].x,cloud[k].y,153,128);
+                            break;
+                        case 3:
+                            pen.drawImage(data.stair_friable,0,0,153,128,cloud[k].x,cloud[k].y,153,128);
+                            break;
+                    }
+                }
+
+
+
+                if(open == 1){
+                    //驴
+                    donkey.i++;
+                    donkey.vy +=donkey.a;
+                    donkey.y -=donkey.vy;
+                    backMove++;
+                    if(donkey.vy <= 0 ){
+
+                        if(donkey.y > 1040){
+                            document.querySelector(".back").style.display ="block";
+                            document.querySelector(".restart").style.display ="block";
+
+                        }
+
+                        for(var k= 0;k<cloud.length;k++){
+                            if(touch(donkey.x,donkey.y,50,50,cloud[k].x,cloud[k].y,152,40) == true){
+                                donkey.vy = 8;
+                                if(cloud[k].kind ==3){
+                                    pen.drawImage(data.stair_friable,0,0,153,128,cloud[k].x,cloud[k].y,153,128);
+                                    pen.drawImage(data.stair_friable,255*2,0,153,128,cloud[k].x,cloud[k].y,153,128);
+                                    cloud.splice(k,1);
+                                }else if(cloud[k].kind ==2){
+                                    pen.drawImage(data.stair_moveable,257,0,153,128,cloud[k].x,cloud[k].y,153,128);
+                                }
+                                //和云碰撞
+                                for(var k= 0;k<cloud.length;k++){
+                                    cloud[k].y =cloud[k].y;
+                                    /* if(cloudspace == cloud[k].y){
+                                     cloud[k].y =cloud[k].y;
+                                     }else {
+                                     cloud[k].y =cloud[k].y+200;
+                                     }*/
+                                }
+                            }else {
+                                donkey.vy +=donkey.a;
+                            }
+                        }
+                    }else{
+                        if(donkey.vy >15){
+                            for(var k= 0;k<cloud.length;k++){
+                                cloud[k].y += donkey.vy;
+                                can.style.backgroundPositionY =backMove+"px";
+                            }
+                        }else{
+                            for(var k= 0;k<cloud.length;k++){
+                                cloud[k].y +=10;
+                                can.style.backgroundPositionY =backMove+"px";
+                            }
                         }
                     }
 
-
-                    if(open == 1){
-                        //驴
-                        donkey.i++;
-                        donkey.vy +=donkey.a;
-                        donkey.y -=donkey.vy;
-                        backMove++;
-                        if(donkey.vy <= 0 ){
-
-                            //这里加一个死亡判定
-                            if(donkey.vy < -300){
-                                can.style.background = "url('image/background.jpg')";
-                                can.style.backgroundPositionX = -480 +"px";
-                                pen.clearRect(0,0,480,1000);
-
-                                document.querySelector(".start").style.display ="block";
-                                document.querySelector(".start").style.backgroundPositionX =-20+"px";
-                            }
-                            for(var k= 0;k<cloud.length;k++){
-                                if(touch(donkey.x,donkey.y,50,50,cloud[k].x,cloud[k].y,152,40) == true){
-                                    donkey.vy = 8;
-                                    if(cloud[k].kind ==3){
-                                        pen.drawImage(data.stair_friable,0,0,153,128,cloud[k].x,cloud[k].y,153,128);
-                                        pen.drawImage(data.stair_friable,255,0,153,128,cloud[k].x,cloud[k].y,153,128);
-                                        pen.drawImage(data.stair_friable,255*2,0,153,128,cloud[k].x,cloud[k].y,153,128);
-
-                                        cloud.splice(k,1);
-                                    }else if(cloud[k].kind ==2){
-                                        pen.drawImage(data.stair_moveable,257,0,153,128,cloud[k].x,cloud[k].y,153,128);
-                                    }
-                                    //和云碰撞
-                                    for(var k= 0;k<cloud.length;k++){
-                                        cloud[k].y =cloud[k].y;
-                                        /* if(cloudspace == cloud[k].y){
-                                         cloud[k].y =cloud[k].y;
-                                         }else {
-                                         cloud[k].y =cloud[k].y+200;
-                                         }*/
-                                    }
-                                }else {
-                                    donkey.vy +=donkey.a;
-                                }
-                            }
-                        }else{
-                            if(donkey.vy >15){
-                                for(var k= 0;k<cloud.length;k++){
-                                    cloud[k].y += donkey.vy;
-                                    can.style.backgroundPositionY =backMove+"px";
-                                }
-                            }else{
-                                for(var k= 0;k<cloud.length;k++){
-                                    cloud[k].y +=10;
-                                    can.style.backgroundPositionY =backMove+"px";
-                                }
-                            }
+                    //驴的左右判定
+                    if(donkey.vx>0){
+                        pen.drawImage(data.jump,donkey.i*128,0,128,128,donkey.x+=donkey.vx,donkey.y,80,80);
+                        if(donkey.i ==33){
+                            donkey.i =0;
                         }
-
-                        //驴的左右判定
+                    }else {
+                        pen.drawImage(data.jumpleft,donkey.i*128,0,128,128,donkey.x+=donkey.vx,donkey.y,80,80);
+                        if(donkey.i ==33){
+                            donkey.i =0;
+                        }
+                    }
+                }else{
+                    if(donkey.vx == 0){
+                        pen.drawImage(data.daiji,0,0,128,128,donkey.x+=donkey.vx,700,80,80);
+                    }else{
                         if(donkey.vx>0){
-                            pen.drawImage(data.jump,donkey.i*128,0,128,128,donkey.x+=donkey.vx,donkey.y,80,80);
-                            if(donkey.i ==33){
+                            pen.drawImage(data.run,donkey.i*128,0,128,128,donkey.x+=donkey.vx,700,80,80);
+                            donkey.i++;
+                            if(donkey.i ==12){
                                 donkey.i =0;
                             }
                         }else {
-                            pen.drawImage(data.jumpleft,donkey.i*128,0,128,128,donkey.x+=donkey.vx,donkey.y,80,80);
-                            if(donkey.i ==33){
+                            pen.drawImage(data.runleft,donkey.i*128,0,128,128,donkey.x+=donkey.vx,700,80,80);
+                            donkey.i++;
+                            if(donkey.i ==12){
                                 donkey.i =0;
                             }
                         }
-
-
-                    }else{
-                        if(donkey.vx == 0){
-                            pen.drawImage(data.daiji,0,0,128,128,donkey.x+=donkey.vx,700,80,80);
-                        }else{
-                            if(donkey.vx>0){
-                                pen.drawImage(data.run,donkey.i*128,0,128,128,donkey.x+=donkey.vx,700,80,80);
-                                donkey.i++;
-                                if(donkey.i ==12){
-                                    donkey.i =0;
-                                }
-                            }else {
-                                pen.drawImage(data.runleft,donkey.i*128,0,128,128,donkey.x+=donkey.vx,700,80,80);
-                                donkey.i++;
-                                if(donkey.i ==12){
-                                    donkey.i =0;
-                                }
-                            }
-                        }
                     }
-                },1000/24);
-            })
-
-
-
-
-            window.onkeydown =function(e){
-                switch (e.keyCode){
-                    case 38:
-                        break;
-                    case 39://右
-                        donkey.vx =10;
-                        break;
-                    case 40:
-                        break;
-                    case 37://左
-                        donkey.vx =-10;
-                        break;
                 }
-            }
+            },1000/24);
+        })
 
-            window.onkeyup =function(){
-                donkey.vx =0;
-            }
 
-            function touch(x1,y1,w1,h1,x2,y2,w2,h2){
-                if(x1>x2+w2 || y1 >y2+h2 || x2> x1+w1 || y2>y1+h1){
-                    return false;
-                }else {
-                    return true;
-                }
+
+
+        window.onkeydown =function(e){
+            switch (e.keyCode){
+                case 38:
+                    break;
+                case 39://右
+                    donkey.vx =10;
+                    break;
+                case 40:
+                    break;
+                case 37://左
+                    donkey.vx =-10;
+                    break;
             }
         }
 
-    }
+        window.onkeyup =function(){
+            donkey.vx =0;
+        }
 
+        function touch(x1,y1,w1,h1,x2,y2,w2,h2){
+            if(x1>x2+w2 || y1 >y2+h2 || x2> x1+w1 || y2>y1+h1){
+                return false;
+            }else {
+                return true;
+            }
+        }
+    }
 
 
 
